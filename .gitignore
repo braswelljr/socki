@@ -1,0 +1,42 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/bin
+/dist
+/share
+
+# man pages
+/share/man/man1
+
+# changelog file generated during release
+/CHANGELOG.md
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+
+# IDE files
+.idea
+.vscode
+
+compose.yaml
+docker-compose.yaml
+docker-compose.yml
+compose.yml
+
+.history/
+
+# lockfile
+yarn.lock
+package-lock.json
+# pnpm-lock.yaml
+
+!web/dist/.gitkeep
