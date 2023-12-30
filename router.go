@@ -36,7 +36,7 @@ func NewRouter(r *mux.Router) {
 		// return a json response
 		if err := json.NewEncoder(w).Encode(map[string]string{"message": "Welcome to the socki API"}); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("Internal Server Error"))
+			_, _ = w.Write([]byte("Internal Server Error"))
 		}
 	}).Methods(http.MethodGet)
 }

@@ -42,3 +42,7 @@ test:
 fix: ## Fix lint violations
 	gofmt -s -w .
 	goimports -w $$(find . -type f -name '*.go' -not -path "*/vendor/*")
+
+.PHONY: lint
+lint: ## Run linters
+	$(GOLINT) run

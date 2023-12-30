@@ -58,9 +58,16 @@ func (client *Client) ReadPump() {
 
 	// set read limit, deadline and pong handler
 	client.connection.SetReadLimit(maxMessageSize)
-	client.connection.SetReadDeadline(time.Now().Add(pongWait))
+	if err := client.connection.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+		logger.Error().Err(err).Msg("Error setting read deadline")
+		return
+	}
+
 	client.connection.SetPongHandler(func(string) error {
-		client.connection.SetReadDeadline(time.Now().Add(pongWait))
+		if err := client.connection.SetReadDeadline(time.Now().Add(pongWait)); err != nil {
+			return err
+		}
+
 		return nil
 	})
 
@@ -97,12 +104,12 @@ func (client *Client) WritePump() {
 	// loop through messages
 	for range client.send {
 		// set write deadline
-		client.connection.SetWriteDeadline(time.Now().Add(writeWait))
+		_ = client.connection.SetWriteDeadline(time.Now().Add(writeWait))
 
 		// check for ok
 		if message, ok := <-client.send; !ok {
 			// write close message
-			client.connection.WriteMessage(websocket.CloseMessage, []byte{})
+			_ = client.connection.WriteMessage(websocket.CloseMessage, []byte{})
 			return
 		} else {
 			// create websocket message
@@ -113,15 +120,15 @@ func (client *Client) WritePump() {
 			}
 
 			// write message
-			writer.Write(message)
+			_, _ = writer.Write(message)
 
 			// loop through messages
 			n := len(client.send)
 
 			for i := 0; i < n; i++ {
 				// write message
-				writer.Write(newline)
-				writer.Write(<-client.send)
+				_, _ = writer.Write(newline)
+				_, _ = writer.Write(<-client.send)
 			}
 
 			// close writer
