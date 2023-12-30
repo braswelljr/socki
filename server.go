@@ -36,7 +36,7 @@ func NewServer(logger *zerolog.Logger, listener net.Listener, assets fs.FS) *Ser
 		assets:   assets,
 	}
 
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 
 	// Add middleware.
 	r.Use(mux.CORSMethodMiddleware(r))
@@ -55,8 +55,10 @@ func NewServer(logger *zerolog.Logger, listener net.Listener, assets fs.FS) *Ser
 		})
 	})
 
-	NewHTTPRouter(r)
+	// handle routes
+	NewRouter(r)
 
+	// handle web app with static file server
 	r.PathPrefix("/").HandlerFunc(server.appHandler)
 
 	server.http = http.Server{
@@ -94,9 +96,11 @@ func (server *Server) Close() error {
 
 // appHandler is web app http handler function.
 func (server *Server) appHandler(w http.ResponseWriter, r *http.Request) {
+	// handle static files
 	staticServer := http.FileServer(http.FS(server.assets))
 	header := w.Header()
 
+	// set headers for static files
 	if contentType, ok := commonContentType(path.Ext(r.URL.Path)); ok {
 		header.Set("Content-Type", contentType)
 	}

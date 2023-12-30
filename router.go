@@ -9,8 +9,7 @@ import (
 )
 
 // NewRouter creates a new router.
-func NewHTTPRouter(r *mux.Router) {
-
+func NewRouter(r *mux.Router) {
 	// prefix all routes with /api
 	api := r.PathPrefix("/api").Subrouter()
 
